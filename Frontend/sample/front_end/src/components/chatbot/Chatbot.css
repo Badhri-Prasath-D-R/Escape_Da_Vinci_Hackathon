@@ -1,0 +1,112 @@
+/* Chatbot Styles */
+.chatbot-page {
+  padding: var(--spacing-xl);
+  max-width: 900px;
+  margin: 0 auto;
+  animation: fadeIn var(--transition-normal);
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: var(--spacing-sm);
+}
+
+.page-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.chat-container {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  height: 500px;
+  box-shadow: var(--shadow-medium);
+  background: var(--surface-color);
+  transition: box-shadow var(--transition-normal);
+}
+
+.chat-container:hover {
+  box-shadow: var(--shadow-heavy);
+}
+
+.chat-messages {
+  flex: 1;
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  background: var(--background-color);
+  scroll-behavior: smooth;
+}
+
+.chat-message {
+  max-width: 75%;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-md);
+  white-space: pre-line;
+  animation: slideIn var(--transition-normal);
+  word-wrap: break-word;
+}
+
+.chat-message.user {
+  background: var(--primary-color);
+  color: white;
+  margin-left: auto;
+  box-shadow: var(--shadow-light);
+}
+
+.chat-message.bot {
+  background: var(--surface-color);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-light);
+}
+
+.chat-input {
+  display: flex;
+  border-top: 1px solid var(--border-color);
+  background: var(--surface-color);
+}
+
+.chat-input input {
+  flex: 1;
+  padding: var(--spacing-lg);
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  transition: border-color var(--transition-fast);
+}
+
+.chat-input input:focus {
+  border-color: var(--primary-color);
+}
+
+.chat-input button {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: var(--success-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+
+.chat-input button:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
