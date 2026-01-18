@@ -3,7 +3,6 @@ uvicorn
 requests
 beautifulsoup4
 trafilatura
-sqlite3
 apscheduler
 chromadb
 sentence-transformers
