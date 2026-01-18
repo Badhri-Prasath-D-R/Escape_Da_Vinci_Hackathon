@@ -15,9 +15,12 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 try:
-    from Backend.Fact_Checker.main4_fast import PIBFactChecker
+    from Fact_Checker.main4_fast import PIBFactChecker
 except ImportError:
-    print("⚠️ Could not import PIBFactChecker. Ensure your folder structure is correct.")
+    try:
+        from Backend.Fact_Checker.main4_fast import PIBFactChecker
+    except ImportError:
+        print("⚠️ Still could not import PIBFactChecker.")
 
 # --- CONFIGURATION ---
 # Using the path from your Hackathon Trial folder
