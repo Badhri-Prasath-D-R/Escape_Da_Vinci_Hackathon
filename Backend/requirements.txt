@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+requests
+beautifulsoup4
+trafilatura
+sqlite3
+apscheduler
+chromadb
+sentence-transformers
+torch --index-url https://download.pytorch.org/whl/cpu
+gradio
+pandas
+scikit-learn
+lucide-react
+pydantic

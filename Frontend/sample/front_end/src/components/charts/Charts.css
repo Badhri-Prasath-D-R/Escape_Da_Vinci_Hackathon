@@ -1,0 +1,22 @@
+/* Charts Styles */
+.bar-chart {
+  margin-top: var(--spacing-md);
+}
+
+.bar {
+  padding: var(--spacing-md);
+  color: white;
+  margin-bottom: var(--spacing-sm);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all var(--transition-normal);
+}
+
+.bar.fake {
+  background: var(--error-color);
+}
+
+.bar.real {
+  background: var(--success-color);
+}

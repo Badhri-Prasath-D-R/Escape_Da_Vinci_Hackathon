@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Node / React
+dist/
+.DS_Store
+
+
+**/chroma_db/
+*.sqlite3
+scraper_debug.log
+venv/
+node_modules/
