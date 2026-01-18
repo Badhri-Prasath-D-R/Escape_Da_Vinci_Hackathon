@@ -1,23 +1,20 @@
-# Use a Python base image
 FROM python:3.10-slim
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Install system dependencies for SQLite
-RUN apt-get update && apt-get install -y build-essential
+# Install system dependencies
+RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
-# Copy and install Python requirements
-COPY Backend/requirements.txt .
+# Copy requirements from the ROOT of your project
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your backend code and your Database folder
-COPY Backend/ .
+# Copy everything else from the current folder (main.py, Database, etc.)
+COPY . .
 
-# Set the port and run the app
+# Hugging Face defaults to 7860
 ENV PORT=7860
 EXPOSE 7860
 
+# Ensure the command points to the main script
 CMD ["python", "main.py"]
-
-ENV PYTHONUNBUFFERED=1
