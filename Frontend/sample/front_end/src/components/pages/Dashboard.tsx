@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { 
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Radar, RadarChart, 
-  PolarGrid, PolarAngleAxis, PolarRadiusAxis
+  PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend
 } from 'recharts';
 import { 
   Activity, ShieldAlert, CheckCircle2, Globe, Zap, Terminal, 
   ExternalLink, ArrowUpRight, BarChart3, Fingerprint, RefreshCcw, Layers,
-  AlertTriangle, TrendingUp, Clock, Database, Shield, AlertCircle
+  AlertTriangle, TrendingUp, Clock, Database, Shield, AlertCircle,
+  Cpu, AlertOctagon, FileCheck, BarChart, ChevronRight, Download,
+  Filter, Search, Users, TrendingDown
 } from 'lucide-react';
 
-const COLORS = ['#60a5fa', '#3b82f6', '#2563eb', '#1d4ed8', '#1e40af', '#1e3a8a'];
-const COLORS_GRADIENT = ['#8b5cf6', '#6366f1', '#3b82f6', '#0ea5e9', '#06b6d4'];
+const COLORS = ['#4f46e5', '#7c3aed', '#0ea5e9', '#06b6d4', '#10b981', '#f59e0b'];
+const COLORS_GRADIENT = ['#4f46e5', '#7c3aed', '#0ea5e9', '#06b6d4'];
 
 const LiveAITerminal = () => {
   const [logs, setLogs] = useState([
@@ -34,26 +36,33 @@ const LiveAITerminal = () => {
   }, []);
 
   return (
-    <div className="terminal-container">
-      <div className="terminal-header">
+    <div className="light-terminal-container">
+      <div className="light-terminal-header">
         <div className="flex items-center gap-2">
-          <Terminal size={16} className="text-blue-400" />
-          <span className="terminal-title">AI Neural Processing Engine</span>
+          <div className="light-terminal-icon">
+            <Cpu size={16} />
+          </div>
+          <div>
+            <span className="light-terminal-title">AI Neural Processing Engine</span>
+            <span className="light-terminal-subtitle">Real-time analysis stream</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-          <span className="text-green-500 font-bold text-xs">SYSTEM_ONLINE</span>
-          <div className="ml-4 px-2 py-1 bg-blue-900/30 rounded-md border border-blue-800/50">
-            <span className="text-blue-300 text-xs font-mono">{logs.length} processes</span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+            <span className="text-emerald-600 font-semibold text-xs">SYSTEM_ONLINE</span>
+          </div>
+          <div className="px-3 py-1 bg-blue-50 rounded-lg border border-blue-100">
+            <span className="text-blue-600 text-xs font-medium">{logs.length} processes</span>
           </div>
         </div>
       </div>
-      <div className="terminal-logs">
+      <div className="light-terminal-logs">
         {logs.map((log, i) => (
-          <div key={i} className="log-entry">
-            <span className="log-time">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
-            <span className="log-divider">›</span>
-            <span className="log-message">{log}</span>
+          <div key={i} className="light-log-entry">
+            <span className="light-log-time">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
+            <span className="light-log-divider">›</span>
+            <span className="light-log-message">{log}</span>
             {i === logs.length - 1 && (
               <span className="ml-2 inline-block w-2 h-4 bg-blue-500 animate-pulse" />
             )}
@@ -69,6 +78,7 @@ const Dashboard = () => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState('24h');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -79,18 +89,21 @@ const Dashboard = () => {
       } catch (e) { console.error(e); } finally { setLoading(false); }
     };
     fetchStats();
-    const interval = setInterval(fetchStats, 30000); // Refresh every 30s
+    const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
   }, []);
 
   if (loading || !data) return (
-    <div className="loading-screen">
-      <div className="loading-content">
-        <RefreshCcw className="animate-spin" size={32} color="#3b82f6" />
-        <div className="mt-4">
-          <p className="text-blue-300 font-medium">Initializing Surveillance Interface</p>
-          <div className="mt-2 w-48 h-1 bg-gray-800 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 animate-pulse" style={{width: '70%'}} />
+    <div className="light-loading-screen">
+      <div className="light-loading-content">
+        <div className="relative">
+          <RefreshCcw className="animate-spin text-indigo-600" size={40} />
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/20 to-purple-400/20 blur-xl rounded-full"></div>
+        </div>
+        <div className="mt-6">
+          <p className="text-gray-700 font-medium mb-2">Initializing Surveillance Interface</p>
+          <div className="w-64 h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 animate-pulse rounded-full" style={{width: '65%'}} />
           </div>
         </div>
       </div>
@@ -98,40 +111,80 @@ const Dashboard = () => {
   );
 
   const threatLevel = data?.stats?.threatLevel || 'Normal';
-  const threatColor = threatLevel === 'High' ? 'red' : threatLevel === 'Medium' ? 'yellow' : 'green';
+  const threatColor = threatLevel === 'High' ? 'bg-red-100 text-red-700 border-red-200' : 
+                      threatLevel === 'Medium' ? 'bg-amber-100 text-amber-700 border-amber-200' : 
+                      'bg-emerald-100 text-emerald-700 border-emerald-200';
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-content">
+    <div className="light-dashboard-container">
+      {/* Top Navigation */}
+      <div className="light-top-nav">
+        <div className="flex items-center gap-4">
+          <button className="light-nav-btn active">
+            <BarChart3 size={18} />
+            Dashboard
+          </button>
+          <button className="light-nav-btn">
+            <Users size={18} />
+            Sources
+          </button>
+          <button className="light-nav-btn">
+            <Filter size={18} />
+            Filters
+          </button>
+          <button className="light-nav-btn">
+            <Download size={18} />
+            Export
+          </button>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            <input
+              type="text"
+              placeholder="Search claims or sources..."
+              className="light-search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="light-dashboard-content">
         
         {/* HEADER */}
-        <header className="dashboard-header">
+        <header className="light-dashboard-header">
           <div className="flex-1">
             <div className="flex items-center gap-3">
-              <div className="header-icon">
-                <Fingerprint size={28} />
+              <div className="light-header-icon">
+                <Fingerprint size={24} className="text-white" />
               </div>
               <div>
-                <h1 className="dashboard-title">
-                  CrisisTruth <span className="gradient-text">AI</span>
+                <h1 className="light-dashboard-title">
+                  CrisisTruth <span className="gradient-text-light">AI</span>
                 </h1>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="version-badge">v4.2</span>
-                  <div className="flex items-center gap-1 text-xs text-gray-400">
-                    <Clock size={12} />
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="light-version-badge">v4.2</span>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Clock size={14} />
                     <span>Last updated: {new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <Globe size={14} />
+                    <span>Global Coverage • 42 Sources Active</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           
-          <div className="header-controls">
-            <div className="timeframe-selector">
+          <div className="light-header-controls">
+            <div className="light-timeframe-selector">
               {['1h', '24h', '7d', '30d'].map((item) => (
                 <button
                   key={item}
-                  className={`timeframe-btn ${timeframe === item ? 'active' : ''}`}
+                  className={`light-timeframe-btn ${timeframe === item ? 'active' : ''}`}
                   onClick={() => setTimeframe(item)}
                 >
                   {item}
@@ -139,33 +192,34 @@ const Dashboard = () => {
               ))}
             </div>
             
-            <div className="threat-indicator">
-              <div className="threat-label">
-                <AlertTriangle size={14} />
-                <span>THREAT LEVEL</span>
-              </div>
-              <div className={`threat-level ${threatColor}`}>
-                <div className="threat-dot" />
-                {threatLevel.toUpperCase()}
+            <div className={`light-threat-indicator ${threatColor}`}>
+              <div className="flex items-center gap-2">
+                <AlertOctagon size={16} />
+                <div>
+                  <p className="text-xs font-medium">THREAT LEVEL</p>
+                  <p className="text-sm font-bold">{threatLevel.toUpperCase()}</p>
+                </div>
               </div>
             </div>
             
-            <button className="refresh-btn">
-              <RefreshCcw size={16} />
+            <button className="light-refresh-btn" onClick={() => window.location.reload()}>
+              <RefreshCcw size={18} />
+              Refresh
             </button>
           </div>
         </header>
 
         {/* STATS CARDS */}
-        <div className="stats-grid">
+        <div className="light-stats-grid">
           {[
             { 
               label: 'Total Scanned', 
               value: data?.stats?.totalScraped || 0, 
               icon: Database, 
-              color: 'blue',
+              color: 'indigo',
               trend: '+12%',
-              description: 'Network nodes'
+              change: 'positive',
+              description: 'Network nodes monitored'
             },
             { 
               label: 'Deceptions Detected', 
@@ -173,139 +227,151 @@ const Dashboard = () => {
               icon: ShieldAlert, 
               color: 'red',
               trend: '+24%',
-              description: 'High confidence'
+              change: 'positive',
+              description: 'High confidence threats'
             },
             { 
               label: 'Verified Intel', 
               value: data?.stats?.realVerified || 0, 
-              icon: CheckCircle2, 
-              color: 'green',
+              icon: FileCheck, 
+              color: 'emerald',
               trend: '+8%',
+              change: 'positive',
               description: 'Validated sources'
             },
             { 
-              label: 'Active Monitors', 
-              value: data?.stats?.activeMonitors || 42, 
-              icon: Globe, 
-              color: 'purple',
-              trend: 'Live',
-              description: 'Global coverage'
+              label: 'Accuracy Rate', 
+              value: '94.2%', 
+              icon: Shield, 
+              color: 'blue',
+              trend: '+2.1%',
+              change: 'positive',
+              description: 'AI confidence score'
             }
           ].map((stat, i) => (
-            <div key={i} className={`stat-card stat-${stat.color}`}>
-              <div className="stat-header">
-                <div className="stat-icon">
+            <div key={i} className="light-stat-card">
+              <div className="light-stat-header">
+                <div className={`light-stat-icon light-stat-icon-${stat.color}`}>
                   <stat.icon size={20} />
                 </div>
-                <span className="stat-trend">{stat.trend}</span>
+                <div className={`light-stat-trend light-stat-trend-${stat.change}`}>
+                  {stat.change === 'positive' ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                  {stat.trend}
+                </div>
               </div>
-              <div className="stat-content">
-                <p className="stat-value">{stat.value.toLocaleString()}</p>
-                <p className="stat-label">{stat.label}</p>
-                <p className="stat-description">{stat.description}</p>
+              <div className="light-stat-content">
+                <p className="light-stat-value">{stat.value}</p>
+                <p className="light-stat-label">{stat.label}</p>
               </div>
-              <div className="stat-footer">
-                <TrendingUp size={12} />
-                <span className="text-xs">Real-time tracking</span>
+              <div className="light-stat-footer">
+                <p className="text-sm text-gray-500">{stat.description}</p>
+                <ChevronRight size={16} className="text-gray-400" />
               </div>
             </div>
           ))}
         </div>
 
         {/* CHARTS SECTION */}
-        <div className="charts-section">
-          <div className="chart-container">
-            <div className="chart-header">
-              <h3 className="chart-title">Category Distribution</h3>
-              <div className="chart-legend">
-                {data?.categoryDistribution?.slice(0, 3).map((cat: any, i: number) => (
-                  <div key={i} className="legend-item">
-                    <div className="legend-color" style={{backgroundColor: COLORS_GRADIENT[i]}} />
-                    <span className="legend-text">{cat.name}</span>
+        <div className="light-charts-section">
+          <div className="light-chart-container">
+            <div className="light-chart-header">
+              <h3 className="light-chart-title">
+                <PieChart size={20} className="text-indigo-600" />
+                Category Distribution
+              </h3>
+              <div className="light-chart-legend">
+                {data?.categoryDistribution?.slice(0, 4).map((cat: any, i: number) => (
+                  <div key={i} className="light-legend-item">
+                    <div className="light-legend-color" style={{backgroundColor: COLORS[i]}} />
+                    <span className="light-legend-text">{cat.name}</span>
+                    <span className="light-legend-value">{cat.value}</span>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="chart-content">
+            <div className="light-chart-content">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie 
                     data={data?.categoryDistribution || []} 
-                    innerRadius={60} 
-                    outerRadius={90} 
+                    innerRadius={70} 
+                    outerRadius={100} 
                     paddingAngle={2}
                     dataKey="value"
-                    strokeWidth={0}
+                    strokeWidth={2}
+                    stroke="#ffffff"
                   >
                     {data?.categoryDistribution?.map((_: any, i: number) => (
                       <Cell 
                         key={i} 
-                        fill={COLORS_GRADIENT[i % COLORS_GRADIENT.length]} 
-                        stroke="#0f172a"
+                        fill={COLORS[i % COLORS.length]} 
+                        stroke="#ffffff"
                         strokeWidth={2}
                       />
                     ))}
                   </Pie>
                   <Tooltip 
                     contentStyle={{ 
-                      background: 'rgba(15, 23, 42, 0.95)', 
-                      border: '1px solid #1e293b', 
+                      background: '#ffffff',
+                      border: '1px solid #e2e8f0',
                       borderRadius: '8px',
-                      backdropFilter: 'blur(10px)'
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                     }}
                     formatter={(value) => [`${value} items`, 'Count']}
                   />
+                  <Legend />
                 </PieChart>
               </ResponsiveContainer>
-              <div className="chart-center-label">
-                <span className="center-label-text">Total</span>
-                <span className="center-label-value">
-                  {data?.categoryDistribution?.reduce((acc: number, curr: any) => acc + curr.value, 0)}
-                </span>
-              </div>
             </div>
           </div>
 
-          <div className="chart-container">
-            <div className="chart-header">
-              <h3 className="chart-title">Risk Assessment</h3>
-              <div className="risk-score">
-                <Shield size={16} className="text-blue-400" />
-                <span>Confidence: 94%</span>
+          <div className="light-chart-container">
+            <div className="light-chart-header">
+              <h3 className="light-chart-title">
+                <RadarChart size={20} className="text-blue-600" />
+                Risk Assessment
+              </h3>
+              <div className="light-risk-score">
+                <Shield size={18} className="text-blue-600" />
+                <div>
+                  <span className="text-sm text-gray-500">Confidence Score</span>
+                  <span className="text-lg font-bold text-blue-600">94%</span>
+                </div>
               </div>
             </div>
-            <div className="chart-content">
+            <div className="light-chart-content">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={data?.categoryDistribution || []}>
                   <PolarGrid 
-                    stroke="#1e293b" 
+                    stroke="#e2e8f0" 
                     strokeWidth={1}
-                    radialLines={false}
+                    radialLines={true}
                   />
                   <PolarAngleAxis 
                     dataKey="name" 
-                    tick={{ fill: '#94a3b8', fontSize: 11, fontWeight: 500 }}
+                    tick={{ fill: '#64748b', fontSize: 12, fontWeight: 500 }}
                   />
                   <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
                   <Radar 
                     name="Risk Level" 
                     dataKey="value" 
-                    stroke="#3b82f6" 
-                    fill="url(#gradientFill)"
-                    fillOpacity={0.3}
+                    stroke="#4f46e5" 
+                    fill="url(#lightGradientFill)"
+                    fillOpacity={0.6}
                     strokeWidth={2}
                   />
                   <defs>
-                    <linearGradient id="gradientFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.6}/>
-                      <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0.2}/>
+                    <linearGradient id="lightGradientFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#4f46e5" stopOpacity={0.8}/>
+                      <stop offset="100%" stopColor="#7c3aed" stopOpacity={0.3}/>
                     </linearGradient>
                   </defs>
                   <Tooltip 
                     contentStyle={{ 
-                      background: 'rgba(15, 23, 42, 0.95)', 
-                      border: '1px solid #1e293b', 
-                      borderRadius: '8px'
+                      background: '#ffffff',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                     }}
                   />
                 </RadarChart>
@@ -315,16 +381,23 @@ const Dashboard = () => {
         </div>
 
         {/* AI TERMINAL */}
-        <div className="terminal-section">
-          <div className="section-header">
-            <h2 className="section-title">
-              <Activity size={20} className="text-blue-400" />
-              AI Processing Log
-            </h2>
-            <div className="section-actions">
-              <button className="action-btn">
-                <Layers size={14} />
-                View Details
+        <div className="light-terminal-section">
+          <div className="light-section-header">
+            <div>
+              <h2 className="light-section-title">
+                <Activity size={22} className="text-indigo-600" />
+                AI Processing Log
+              </h2>
+              <p className="light-section-subtitle">Real-time analysis and verification stream</p>
+            </div>
+            <div className="light-section-actions">
+              <button className="light-action-btn secondary">
+                <Filter size={16} />
+                Filter Logs
+              </button>
+              <button className="light-action-btn primary">
+                <Download size={16} />
+                Export Logs
               </button>
             </div>
           </div>
@@ -332,43 +405,58 @@ const Dashboard = () => {
         </div>
 
         {/* NEWS FEEDS */}
-        <div className="feeds-section">
-          <div className="feed-column">
-            <div className="feed-header feed-header-red">
-              <AlertCircle size={20} className="text-red-400" />
-              <div>
-                <h2 className="feed-title">Threat Stream</h2>
-                <p className="feed-subtitle">Potential misinformation detected</p>
+        <div className="light-feeds-section">
+          <div className="light-feed-column">
+            <div className="light-feed-header light-feed-header-red">
+              <div className="flex items-center gap-3">
+                <AlertTriangle size={24} className="text-red-600" />
+                <div>
+                  <h2 className="light-feed-title">Threat Stream</h2>
+                  <p className="light-feed-subtitle">Potential misinformation detected</p>
+                </div>
               </div>
-              <span className="feed-count">{data?.trendingFake?.length || 0} alerts</span>
+              <div className="flex items-center gap-3">
+                <span className="light-feed-count">{data?.trendingFake?.length || 0} alerts</span>
+                <div className="px-3 py-1 bg-red-50 rounded-lg border border-red-100">
+                  <span className="text-red-600 text-sm font-medium">High Priority</span>
+                </div>
+              </div>
             </div>
             
-            <div className="feed-content">
+            <div className="light-feed-content">
               {data?.trendingFake?.map((news: any) => (
-                <div key={news.id} className="news-card news-card-threat">
-                  <div className="news-card-header">
-                    <div className="news-meta">
-                      <span className="news-badge news-badge-red">FAKE SCORE: {news.fakeScore}%</span>
-                      <span className="news-source">{news.source || 'Unknown Source'}</span>
+                <div key={news.id} className="light-news-card light-news-card-threat">
+                  <div className="light-news-card-header">
+                    <div className="light-news-meta">
+                      <div className="flex items-center gap-2">
+                        <span className="light-news-badge light-news-badge-red">
+                          FAKE SCORE: {news.fakeScore}%
+                        </span>
+                        <span className="light-news-source">{news.source || 'Unknown Source'}</span>
+                      </div>
+                      <span className="light-news-time">2h ago</span>
                     </div>
-                    <div className="news-priority">
-                      <div className={`priority-dot ${news.fakeScore > 80 ? 'high' : 'medium'}`} />
+                    <div className={`light-news-priority ${news.fakeScore > 80 ? 'high' : 'medium'}`}>
+                      <AlertOctagon size={16} />
                     </div>
                   </div>
-                  <h4 className="news-title">{news.title || "Untitled Intelligence"}</h4>
-                  <p className="news-description">
+                  <h4 className="light-news-title">{news.title || "Untitled Intelligence"}</h4>
+                  <p className="light-news-description">
                     {news.description ? `${news.description.substring(0, 120)}...` : "No description available."}
                   </p>
-                  <div className="news-footer">
-                    <div className="news-tags">
-                      {news.category && <span className="news-tag">{news.category}</span>}
-                      <span className="news-time">2h ago</span>
+                  <div className="light-news-footer">
+                    <div className="flex items-center gap-2">
+                      {news.category && (
+                        <span className="light-news-category">{news.category}</span>
+                      )}
+                      <span className="light-news-tag">Misinformation</span>
+                      <span className="light-news-tag">High Confidence</span>
                     </div>
                     <button 
                       onClick={() => news.url && window.open(news.url, '_blank')}
-                      className="news-btn news-btn-red"
+                      className="light-news-btn light-news-btn-red"
                     >
-                      <ExternalLink size={14} />
+                      <ExternalLink size={16} />
                       Audit Source
                     </button>
                   </div>
@@ -377,42 +465,62 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="feed-column">
-            <div className="feed-header feed-header-green">
-              <Shield size={20} className="text-green-400" />
-              <div>
-                <h2 className="feed-title">Validated Intel</h2>
-                <p className="feed-subtitle">Verified reliable information</p>
+          <div className="light-feed-column">
+            <div className="light-feed-header light-feed-header-green">
+              <div className="flex items-center gap-3">
+                <Shield size={24} className="text-emerald-600" />
+                <div>
+                  <h2 className="light-feed-title">Validated Intel</h2>
+                  <p className="light-feed-subtitle">Verified reliable information</p>
+                </div>
               </div>
-              <span className="feed-count">{data?.trendingReal?.length || 0} verified</span>
+              <div className="flex items-center gap-3">
+                <span className="light-feed-count">{data?.trendingReal?.length || 0} verified</span>
+                <div className="px-3 py-1 bg-emerald-50 rounded-lg border border-emerald-100">
+                  <span className="text-emerald-600 text-sm font-medium">Trusted</span>
+                </div>
+              </div>
             </div>
             
-            <div className="feed-content">
+            <div className="light-feed-content">
               {data?.trendingReal?.map((news: any) => (
-                <div key={news.id} className="news-card news-card-verified">
-                  <div className="news-card-header">
-                    <div className="news-meta">
-                      <span className="news-badge news-badge-green">VERIFIED</span>
-                      <span className="news-source news-source-verified">{news.source || 'Trusted Source'}</span>
+                <div key={news.id} className="light-news-card light-news-card-verified">
+                  <div className="light-news-card-header">
+                    <div className="light-news-meta">
+                      <div className="flex items-center gap-2">
+                        <span className="light-news-badge light-news-badge-green">
+                          <CheckCircle2 size={14} />
+                          VERIFIED
+                        </span>
+                        <span className="light-news-source light-news-source-verified">
+                          {news.source || 'Trusted Source'}
+                        </span>
+                      </div>
+                      <span className="light-news-time light-news-time-verified">4h ago</span>
                     </div>
-                    <div className="verification-badge">
-                      <CheckCircle2 size={16} className="text-green-400" />
+                    <div className="light-verification-badge">
+                      <CheckCircle2 size={20} className="text-emerald-500" />
                     </div>
                   </div>
-                  <h4 className="news-title">{news.title || "Untitled Intelligence"}</h4>
-                  <p className="news-description">
+                  <h4 className="light-news-title">{news.title || "Untitled Intelligence"}</h4>
+                  <p className="light-news-description">
                     {news.description ? `${news.description.substring(0, 120)}...` : "No description available."}
                   </p>
-                  <div className="news-footer">
-                    <div className="news-tags">
-                      {news.category && <span className="news-tag news-tag-verified">{news.category}</span>}
-                      <span className="news-time news-time-verified">4h ago</span>
+                  <div className="light-news-footer">
+                    <div className="flex items-center gap-2">
+                      {news.category && (
+                        <span className="light-news-category light-news-category-verified">
+                          {news.category}
+                        </span>
+                      )}
+                      <span className="light-news-tag light-news-tag-verified">Verified</span>
+                      <span className="light-news-tag light-news-tag-verified">High Accuracy</span>
                     </div>
                     <button 
                       onClick={() => news.url && window.open(news.url, '_blank')}
-                      className="news-btn news-btn-green"
+                      className="light-news-btn light-news-btn-green"
                     >
-                      <ExternalLink size={14} />
+                      <ExternalLink size={16} />
                       View Report
                     </button>
                   </div>
@@ -421,90 +529,164 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+
+        {/* FOOTER */}
+        <div className="light-dashboard-footer">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4 text-sm text-gray-500">
+              <span>© 2024 CrisisTruth AI</span>
+              <span>•</span>
+              <span>v4.2.1</span>
+              <span>•</span>
+              <span>System Status: <span className="text-emerald-600 font-medium">Operational</span></span>
+            </div>
+            <div className="flex items-center gap-4">
+              <button className="text-sm text-gray-500 hover:text-gray-700">Privacy</button>
+              <button className="text-sm text-gray-500 hover:text-gray-700">Terms</button>
+              <button className="text-sm text-gray-500 hover:text-gray-700">Documentation</button>
+              <button className="text-sm text-gray-500 hover:text-gray-700">Support</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-// Add these CSS styles (or use with Tailwind CSS classes)
-const styles = `
-.dashboard-container {
+// Add CSS styles for light theme
+const lightStyles = `
+.light-dashboard-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-  color: #f1f5f9;
-  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  color: #0f172a;
+  padding: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.dashboard-content {
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Header */
-.dashboard-header {
+/* Top Navigation */
+.light-top-nav {
+  background: white;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.light-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.light-nav-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.light-nav-btn.active {
+  background: #4f46e5;
+  color: white;
+}
+
+.light-search-input {
+  padding: 10px 16px 10px 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  width: 280px;
+  background: white;
+  transition: all 0.2s;
+}
+
+.light-search-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.light-dashboard-content {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* Header */
+.light-dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 32px;
   gap: 24px;
 }
 
-.header-icon {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  padding: 12px;
+.light-header-icon {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  padding: 16px;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
 }
 
-.dashboard-title {
-  font-size: 28px;
+.light-dashboard-title {
+  font-size: 32px;
   font-weight: 800;
   margin: 0;
-  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  color: #0f172a;
+}
+
+.gradient-text-light {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, #60a5fa, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.version-badge {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 11px;
+.light-version-badge {
+  background: #e0e7ff;
+  color: #4f46e5;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 600;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid #c7d2fe;
 }
 
-.header-controls {
+.light-header-controls {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.timeframe-selector {
+.light-timeframe-selector {
   display: flex;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid #1e293b;
+  background: white;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 4px;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.timeframe-btn {
-  padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #94a3b8;
+.light-timeframe-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -512,608 +694,634 @@ const styles = `
   transition: all 0.2s;
 }
 
-.timeframe-btn.active {
-  background: #1e293b;
-  color: #60a5fa;
+.light-timeframe-btn.active {
+  background: #4f46e5;
+  color: white;
+  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.2);
 }
 
-.threat-indicator {
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px solid #1e293b;
-  padding: 8px 16px;
+.light-threat-indicator {
+  padding: 12px 20px;
   border-radius: 12px;
-  min-width: 140px;
-  backdrop-filter: blur(10px);
+  border: 1px solid;
+  min-width: 160px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.threat-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.threat-level {
+.light-refresh-btn {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.threat-level.red { color: #ef4444; }
-.threat-level.yellow { color: #f59e0b; }
-.threat-level.green { color: #10b981; }
-
-.threat-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-.threat-level.red .threat-dot { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
-.threat-level.yellow .threat-dot { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
-.threat-level.green .threat-dot { background: #10b981; box-shadow: 0 0 8px #10b981; }
-
-.refresh-btn {
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #60a5fa;
-  padding: 8px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: #4f46e5;
+  padding: 10px 20px;
   border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.refresh-btn:hover {
-  background: rgba(59, 130, 246, 0.2);
-  transform: rotate(45deg);
+.light-refresh-btn:hover {
+  background: #f8fafc;
+  border-color: #4f46e5;
 }
 
 /* Stats Cards */
-.stats-grid {
+.light-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   margin-bottom: 32px;
 }
 
-.stat-card {
-  background: rgba(15, 23, 42, 0.7);
-  border-radius: 20px;
+.light-stat-card {
+  background: white;
+  border-radius: 16px;
   padding: 24px;
-  border: 1px solid #1e293b;
+  border: 1px solid #e2e8f0;
   transition: all 0.3s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
 }
 
-.stat-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+.light-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: #c7d2fe;
 }
 
-.stat-card::before {
+.light-stat-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 2px;
+  height: 4px;
 }
 
-.stat-card.stat-blue::before { background: linear-gradient(90deg, #3b82f6, #0ea5e9); }
-.stat-card.stat-red::before { background: linear-gradient(90deg, #ef4444, #f97316); }
-.stat-card.stat-green::before { background: linear-gradient(90deg, #10b981, #22c55e); }
-.stat-card.stat-purple::before { background: linear-gradient(90deg, #8b5cf6, #a855f7); }
+.light-stat-card:nth-child(1)::before { background: linear-gradient(90deg, #4f46e5, #7c3aed); }
+.light-stat-card:nth-child(2)::before { background: linear-gradient(90deg, #ef4444, #f97316); }
+.light-stat-card:nth-child(3)::before { background: linear-gradient(90deg, #10b981, #22c55e); }
+.light-stat-card:nth-child(4)::before { background: linear-gradient(90deg, #0ea5e9, #06b6d4); }
 
-.stat-header {
+.light-stat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.stat-icon {
-  background: rgba(59, 130, 246, 0.1);
-  padding: 8px;
-  border-radius: 10px;
+.light-stat-icon {
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.stat-card.stat-blue .stat-icon { color: #60a5fa; background: rgba(59, 130, 246, 0.1); }
-.stat-card.stat-red .stat-icon { color: #f87171; background: rgba(239, 68, 68, 0.1); }
-.stat-card.stat-green .stat-icon { color: #34d399; background: rgba(16, 185, 129, 0.1); }
-.stat-card.stat-purple .stat-icon { color: #a78bfa; background: rgba(139, 92, 246, 0.1); }
+.light-stat-icon-indigo { background: #e0e7ff; color: #4f46e5; }
+.light-stat-icon-red { background: #fee2e2; color: #ef4444; }
+.light-stat-icon-emerald { background: #d1fae5; color: #10b981; }
+.light-stat-icon-blue { background: #dbeafe; color: #0ea5e9; }
 
-.stat-trend {
-  font-size: 12px;
+.light-stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
   font-weight: 600;
-  padding: 4px 8px;
-  border-radius: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
 }
 
-.stat-card.stat-blue .stat-trend { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-.stat-card.stat-red .stat-trend { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-.stat-card.stat-green .stat-trend { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-.stat-card.stat-purple .stat-trend { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+.light-stat-trend-positive {
+  background: #d1fae5;
+  color: #059669;
+}
 
-.stat-value {
-  font-size: 32px;
+.light-stat-trend-negative {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.light-stat-value {
+  font-size: 36px;
   font-weight: 800;
   margin: 0;
-  background: linear-gradient(135deg, #f8fafc, #cbd5e1);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #0f172a;
 }
 
-.stat-label {
-  font-size: 14px;
-  color: #94a3b8;
+.light-stat-label {
+  font-size: 16px;
+  color: #64748b;
   margin: 8px 0 4px 0;
 }
 
-.stat-description {
-  font-size: 12px;
-  color: #64748b;
-  margin: 0;
-}
-
-.stat-footer {
+.light-stat-footer {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 6px;
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(30, 41, 59, 0.5);
-  color: #64748b;
-  font-size: 11px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
 }
 
 /* Charts */
-.charts-section {
+.light-charts-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
   gap: 24px;
   margin-bottom: 32px;
 }
 
-.chart-container {
-  background: rgba(15, 23, 42, 0.7);
-  border-radius: 20px;
-  border: 1px solid #1e293b;
+.light-chart-container {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
   padding: 24px;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.chart-header {
+.light-chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
 }
 
-.chart-title {
-  font-size: 16px;
-  font-weight: 700;
-  margin: 0;
-  color: #f8fafc;
-}
-
-.chart-legend {
-  display: flex;
-  gap: 12px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.legend-color {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-}
-
-.legend-text {
-  font-size: 11px;
-  color: #94a3b8;
-}
-
-.chart-content {
-  height: 300px;
-  position: relative;
-}
-
-.chart-center-label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.center-label-text {
-  display: block;
-  font-size: 12px;
-  color: #94a3b8;
-  margin-bottom: 4px;
-}
-
-.center-label-value {
-  font-size: 24px;
-  font-weight: 800;
-  color: #f8fafc;
-}
-
-.risk-score {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #94a3b8;
-  background: rgba(59, 130, 246, 0.1);
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-/* Terminal */
-.terminal-section {
-  margin-bottom: 32px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.section-title {
+.light-chart-title {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 18px;
   font-weight: 700;
   margin: 0;
+  color: #0f172a;
 }
 
-.action-btn {
+.light-chart-legend {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  color: #60a5fa;
-  padding: 8px 16px;
-  border-radius: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.action-btn:hover {
-  background: rgba(59, 130, 246, 0.2);
-}
-
-.terminal-container {
-  background: rgba(15, 23, 42, 0.7);
-  padding: 24px;
-  border-radius: 20px;
-  border: 1px solid #1e293b;
-  backdrop-filter: blur(10px);
-  position: relative;
-}
-
-.terminal-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-}
-
-.terminal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 12px;
-  margin-bottom: 12px;
-  border-bottom: 1px solid rgba(30, 41, 59, 0.5);
-}
-
-.terminal-title {
-  color: #60a5fa;
-  font-weight: 700;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.terminal-logs {
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 12px;
-}
-
-.log-entry {
+.light-legend-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 6px 0;
-  color: #94a3b8;
+  padding: 6px 12px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
 
-.log-time {
-  color: #60a5fa;
-  min-width: 85px;
+.light-legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
 }
 
-.log-divider {
+.light-legend-text {
+  font-size: 14px;
+  color: #64748b;
+}
+
+.light-legend-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.light-chart-content {
+  height: 320px;
+  position: relative;
+}
+
+.light-risk-score {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #eff6ff;
+  border-radius: 12px;
+  border: 1px solid #dbeafe;
+}
+
+/* Terminal */
+.light-terminal-section {
+  margin-bottom: 32px;
+}
+
+.light-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.light-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  color: #0f172a;
+}
+
+.light-section-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.light-section-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.light-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.light-action-btn.primary {
+  background: #4f46e5;
+  color: white;
+}
+
+.light-action-btn.secondary {
+  background: white;
+  color: #4f46e5;
+  border: 1px solid #e2e8f0;
+}
+
+.light-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.light-terminal-container {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.light-terminal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.light-terminal-icon {
+  background: #e0e7ff;
+  color: #4f46e5;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.light-terminal-title {
+  display: block;
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.light-terminal-subtitle {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.light-terminal-logs {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.light-log-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
   color: #475569;
 }
 
-.log-message {
+.light-log-time {
+  color: #4f46e5;
+  min-width: 85px;
+  font-weight: 500;
+}
+
+.light-log-divider {
+  color: #94a3b8;
+}
+
+.light-log-message {
   flex: 1;
-  color: #cbd5e1;
+  color: #0f172a;
 }
 
 /* News Feeds */
-.feeds-section {
+.light-feeds-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
   gap: 24px;
+  margin-bottom: 32px;
 }
 
-.feed-column {
+.light-feed-column {
   display: flex;
   flex-direction: column;
 }
 
-.feed-header {
+.light-feed-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
+  padding: 20px 24px;
   border-radius: 16px 16px 0 0;
   margin-bottom: 16px;
 }
 
-.feed-header-red {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.05));
-  border: 1px solid rgba(239, 68, 68, 0.2);
+.light-feed-header-red {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border: 1px solid #fecaca;
 }
 
-.feed-header-green {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.05));
-  border: 1px solid rgba(16, 185, 129, 0.2);
+.light-feed-header-green {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border: 1px solid #bbf7d0;
 }
 
-.feed-title {
-  font-size: 18px;
+.light-feed-title {
+  font-size: 20px;
   font-weight: 800;
   margin: 0;
 }
 
-.feed-header-red .feed-title { color: #f87171; }
-.feed-header-green .feed-title { color: #34d399; }
+.light-feed-header-red .light-feed-title { color: #dc2626; }
+.light-feed-header-green .light-feed-title { color: #059669; }
 
-.feed-subtitle {
-  font-size: 12px;
-  color: #94a3b8;
+.light-feed-subtitle {
+  font-size: 14px;
+  color: #64748b;
   margin: 2px 0 0 0;
 }
 
-.feed-count {
-  margin-left: auto;
-  font-size: 12px;
+.light-feed-count {
+  font-size: 14px;
   font-weight: 600;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 20px;
 }
 
-.feed-header-red .feed-count { 
-  background: rgba(239, 68, 68, 0.15); 
-  color: #fca5a5; 
+.light-feed-header-red .light-feed-count { 
+  background: #fee2e2; 
+  color: #dc2626; 
 }
 
-.feed-header-green .feed-count { 
-  background: rgba(16, 185, 129, 0.15); 
-  color: #86efac; 
+.light-feed-header-green .light-feed-count { 
+  background: #d1fae5; 
+  color: #059669; 
 }
 
-.feed-content {
+.light-feed-content {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.news-card {
-  background: rgba(15, 23, 42, 0.7);
-  border-radius: 16px;
+.light-news-card {
+  background: white;
+  border-radius: 12px;
   padding: 20px;
-  border: 1px solid #1e293b;
+  border: 1px solid #e2e8f0;
   transition: all 0.3s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.news-card:hover {
+.light-news-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.news-card-threat:hover { border-color: rgba(239, 68, 68, 0.4); }
-.news-card-verified:hover { border-color: rgba(16, 185, 129, 0.4); }
+.light-news-card-threat:hover { border-color: #fca5a5; }
+.light-news-card-verified:hover { border-color: #86efac; }
 
-.news-card-header {
+.light-news-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
-.news-meta {
+.light-news-meta {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.light-news-badge {
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
-}
-
-.news-badge {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 4px 8px;
+  padding: 6px 12px;
   border-radius: 6px;
-  display: inline-block;
+  width: fit-content;
 }
 
-.news-badge-red {
-  background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+.light-news-badge-red {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
-.news-badge-green {
-  background: rgba(16, 185, 129, 0.15);
-  color: #86efac;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+.light-news-badge-green {
+  background: #d1fae5;
+  color: #059669;
+  border: 1px solid #bbf7d0;
 }
 
-.news-source {
-  font-size: 11px;
+.light-news-source {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.light-news-source-verified {
+  color: #059669;
+  font-weight: 500;
+}
+
+.light-news-time {
+  font-size: 12px;
   color: #94a3b8;
 }
 
-.news-source-verified {
-  color: #34d399;
+.light-news-time-verified {
+  color: #059669;
 }
 
-.news-priority {
+.light-news-priority {
+  padding: 8px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
 }
 
-.priority-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.light-news-priority.high {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
-.priority-dot.high { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
-.priority-dot.medium { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+.light-news-priority.medium {
+  background: #fef3c7;
+  color: #d97706;
+}
 
-.verification-badge {
-  background: rgba(16, 185, 129, 0.1);
-  padding: 6px;
+.light-verification-badge {
+  background: #d1fae5;
+  padding: 8px;
   border-radius: 8px;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid #bbf7d0;
 }
 
-.news-title {
+.light-news-title {
   font-size: 16px;
   font-weight: 700;
   margin: 0 0 12px 0;
-  color: #f8fafc;
+  color: #0f172a;
   line-height: 1.4;
 }
 
-.news-description {
-  font-size: 13px;
-  color: #94a3b8;
+.light-news-description {
+  font-size: 14px;
+  color: #64748b;
   line-height: 1.6;
   margin: 0 0 16px 0;
 }
 
-.news-footer {
+.light-news-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.news-tags {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.light-news-category {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
 }
 
-.news-tag {
+.light-news-category-verified {
+  background: #d1fae5;
+  color: #059669;
+  border-color: #bbf7d0;
+}
+
+.light-news-tag {
   font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 12px;
-  background: rgba(30, 41, 59, 0.5);
-  color: #94a3b8;
-}
-
-.news-tag-verified {
-  background: rgba(16, 185, 129, 0.1);
-  color: #34d399;
-}
-
-.news-time {
-  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
   color: #64748b;
 }
 
-.news-time-verified {
-  color: #34d399;
+.light-news-tag-verified {
+  background: #d1fae5;
+  color: #059669;
 }
 
-.news-btn {
+.light-news-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 10px;
-  font-size: 12px;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   border: none;
   transition: all 0.2s;
 }
 
-.news-btn-red {
-  background: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+.light-news-btn-red {
+  background: white;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
-.news-btn-red:hover {
-  background: rgba(239, 68, 68, 0.2);
+.light-news-btn-red:hover {
+  background: #fee2e2;
 }
 
-.news-btn-green {
-  background: rgba(16, 185, 129, 0.1);
-  color: #86efac;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+.light-news-btn-green {
+  background: white;
+  color: #059669;
+  border: 1px solid #bbf7d0;
 }
 
-.news-btn-green:hover {
-  background: rgba(16, 185, 129, 0.2);
+.light-news-btn-green:hover {
+  background: #d1fae5;
+}
+
+/* Footer */
+.light-dashboard-footer {
+  padding: 24px;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 32px;
+  background: white;
+  border-radius: 16px;
 }
 
 /* Loading Screen */
-.loading-screen {
+.light-loading-screen {
   min-height: 100vh;
-  background: #020617;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.loading-content {
+.light-loading-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: white;
+  padding: 48px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
 }
 
 .animate-spin {
@@ -1126,43 +1334,48 @@ const styles = `
 }
 
 /* Responsive */
-@media (max-width: 1100px) {
-  .charts-section,
-  .feeds-section {
+@media (max-width: 1200px) {
+  .light-charts-section,
+  .light-feeds-section {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .dashboard-header {
+  .light-dashboard-header {
     flex-direction: column;
     align-items: stretch;
   }
   
-  .header-controls {
+  .light-header-controls {
     flex-wrap: wrap;
   }
   
-  .stats-grid {
+  .light-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
   
-  .charts-section {
-    grid-template-columns: 1fr;
+  .light-top-nav {
+    flex-direction: column;
+    gap: 16px;
   }
   
-  .chart-container {
-    min-width: 100%;
+  .light-search-input {
+    width: 100%;
   }
 }
 
 @media (max-width: 640px) {
-  .stats-grid {
+  .light-stats-grid {
     grid-template-columns: 1fr;
   }
   
-  .feeds-section {
+  .light-feeds-section {
     grid-template-columns: 1fr;
+  }
+  
+  .light-dashboard-content {
+    padding: 16px;
   }
 }
 `;
@@ -1170,7 +1383,7 @@ const styles = `
 // Add styles to document head
 if (typeof document !== 'undefined') {
   const styleSheet = document.createElement("style");
-  styleSheet.textContent = styles;
+  styleSheet.textContent = lightStyles;
   document.head.appendChild(styleSheet);
 }
 
