@@ -14,7 +14,7 @@ import {
 
 type BarChartData = {
   name: string;
-  value: number;
+  value?: number;
   fake?: number;
   real?: number;
   color?: string;
